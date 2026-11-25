@@ -63,6 +63,7 @@ main, .contact { position: relative; z-index: 1; }
 .agent-layer.off { display: none; }
 .agent-cursor { position: absolute; left: 0; top: 0; opacity: 0; will-change: transform; transition: opacity 0.3s; }
 .agent-cursor.visible { opacity: 1; }
+.agent-cursor.absorbing { opacity: 0; transition: opacity 0.65s ease; }
 .agent-cursor svg { display: block; filter: drop-shadow(0 2px 3px rgba(0, 0, 0, 0.3)); transition: transform 0.12s; transform-origin: 3px 3px; }
 .agent-cursor.down svg { transform: scale(0.8); }
 .agent-chip {

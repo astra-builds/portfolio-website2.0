@@ -311,7 +311,9 @@ export class Engine {
   private async life(cur: Cursor, idx: number) {
     await new Promise((r) => setTimeout(r, 400 + idx * 650));
     let angle = (idx / AGENTS.length) * Math.PI * 2 - Math.PI / 2;
-    while (!this.dead) {
+    let travelled = 0;
+    const lap = Math.PI * 2;
+    while (!this.dead && travelled < lap) {
       if (!this.ambientOn) {
         await new Promise((r) => setTimeout(r, 400));
         continue;
@@ -341,9 +343,21 @@ export class Engine {
       const radiusY = Math.min(r.height * 0.6 + gap, vh * 0.18);
       const x = clamp(r.left + r.width / 2 + Math.cos(angle) * radiusX, 18, vw - 18);
       const y = clamp(r.top + r.height / 2 + Math.sin(angle) * radiusY, 72, vh - 52);
-      await cur.moveTo(x, y, 920 + idx * 70, ease.outExpo);
-      angle += 0.34 + idx * 0.025;
+      const step = 0.55 + idx * 0.025;
+      const moved = await cur.moveTo(x, y, 560 + idx * 35, ease.outExpo);
+      if (moved) {
+        angle += step;
+        travelled += step;
+      }
       await new Promise((r) => setTimeout(r, 100));
     }
+    if (this.dead) return;
+    while ((!this.ambientOn || this.gatherEl) && !this.dead) await new Promise((r) => setTimeout(r, 300));
+    if (this.dead) return;
+    const orb = document.querySelector<HTMLElement>('[data-build="orb"]');
+    if (!orb) return;
+    const r = orb.getBoundingClientRect();
+    await cur.moveTo(r.left + r.width / 2, r.top + r.height / 2, 720 + idx * 45, ease.inOut);
+    cur.el.classList.add("absorbing");
   }
 }
